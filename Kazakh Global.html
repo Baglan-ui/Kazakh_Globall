@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTANIC - Global Kazakh Craft & Food</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .product-card:hover { transform: translateY(-4px); transition: all 0.25s ease; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .nav-btn { transition: transform 0.15s ease-in-out; }
+        .nav-btn:active { transform: scale(1.15); }
+        .star-rating i { cursor: pointer; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans pb-24 min-h-screen">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div id="header-user-badge" class="flex items-center space-x-2 cursor-pointer hidden" onclick="switchTab('profile')">
+                <div id="header-mini-avatar" class="w-9 h-9 bg-amber-800 text-white rounded-full flex items-center justify-center font-bold text-sm shadow overflow-hidden"></div>
+                <div class="flex flex-col">
+                    <span id="header-mini-nickname" class="font-bold text-sm text-gray-900 leading-tight"></span>
+                    <span class="text-[10px] text-amber-700 font-semibold" id="lbl-header-profile">Профиль</span>
+                </div>
+            </div>
+            <div id="header-logo" class="flex items-center space-x-2 cursor-pointer" onclick="switchTab('home')">
+                <span class="text-2xl font-black tracking-wider text-amber-800">OTANIC<span class="text-xs ml-1 bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full font-bold">GLOBAL</span></span>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+                <button onclick="switchTab('search')" class="w-9 h-9 bg-gray-100 hover:bg-amber-100 text-amber-800 rounded-full flex items-center justify-center transition shadow-sm">
+                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-4 pt-4">
+        
+        <!-- Tab 1: Home View -->
+        <div id="tab-home" class="tab-content">
+            <div class="bg-gradient-to-r from-amber-800 to-amber-950 rounded-2xl p-5 text-white mb-5 shadow-md relative overflow-hidden">
+                <span class="bg-amber-700 text-amber-100 text-[10px] px-3 py-1 rounded-full uppercase tracking-wider font-semibold" id="hero-badge">Халықаралық Жеткізу</span>
+                <h1 class="text-xl md:text-2xl font-bold mt-2 mb-1" id="hero-title">Қазақстанның Ең Үздік Өнімдері</h1>
+                <p class="text-amber-200 text-xs mb-3" id="hero-desc">Шетелге бұзылмай жететін табиғи құрт, бал, ұлттық киім және қолөнер бұйымдары</p>
+                <div class="inline-flex items-center space-x-2 bg-white text-amber-900 px-3 py-1.5 rounded-xl text-xs font-bold shadow">
+                    <i class="fa-solid fa-plane"></i>
+                    <span id="hero-sub">Kazpost, DHL, FedEx арқылы әлемге</span>
+                </div>
+            </div>
+
+            <!-- Categories Tabs -->
+            <div class="mb-5">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-base font-bold" id="cat-title">Санаттар (Таңдаңыз)</h2>
+                    <button onclick="openAddProductModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow flex items-center space-x-1 transition">
+                        <i class="fa-solid fa-plus"></i>
+                        <span id="lbl-add-prod-btn">Товар қосу</span>
+                    </button>
+                </div>
+                <div class="flex space-x-2 overflow-x-auto no-scrollbar pb-1" id="category-buttons">
+                    <button onclick="filterCategory('craft')" id="cat-btn-craft" class="cat-btn bg-amber-800 text-white px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap shadow">🎨 Қолөнер бұйымдары</button>
+                    <button onclick="filterCategory('clothes')" id="cat-btn-clothes" class="cat-btn bg-white text-gray-700 border border-gray-200 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap shadow-sm">🧥 Ұлттық киімдер</button>
+                    <button onclick="filterCategory('headwear')" id="cat-btn-headwear" class="cat-btn bg-white text-gray-700 border border-gray-200 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap shadow-sm">🧢 Бас киімдер</button>
+                    <button onclick="filterCategory('food')" id="cat-btn-food" class="cat-btn bg-white text-gray-700 border border-gray-200 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap shadow-sm">🧀 Ұзақ сақталатын тағамдар</button>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-base font-bold" id="prod-title">Өнімдер тізімі</h2>
+                <span id="product-count" class="text-xs text-gray-500 font-semibold"></span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5" id="products-grid"></div>
+        </div>
+
+        <!-- Tab 2: Search View -->
+        <div id="tab-search" class="tab-content hidden">
+            <h2 class="text-lg font-bold mb-3" id="search-header-title">Өнімдерді Іздеу</h2>
+            <div class="mb-4">
+                <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Заттың атауын жазыңыз..." class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-800 shadow-sm">
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5" id="search-results-grid"></div>
+        </div>
+
+        <!-- Tab 3: Favorites -->
+        <div id="tab-favorites" class="tab-content hidden">
+            <h2 class="text-lg font-bold mb-3" id="fav-header-title">Таңдаулылар</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5" id="favorites-grid"></div>
+        </div>
+
+        <!-- Tab 4: Global Chat / Feed -->
+        <div id="tab-chat" class="tab-content hidden">
+            <div class="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm mb-4">
+                <h2 class="text-base font-bold mb-1 flex items-center">
+                    <i class="fa-solid fa-earth-americas text-amber-800 mr-2"></i> Global Community Chat
+                </h2>
+                <p class="text-xs text-gray-500 mb-3" id="chat-desc">Әлемнің кез келген түкпірінен пікіріңізді қалдырыңыз!</p>
+                
+                <textarea id="post-text" placeholder="Отандық өнімдер туралы не ойлайсыз?" class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:border-amber-800 resize-none h-20"></textarea>
+                
+                <div class="flex justify-between items-center mt-2">
+                    <select id="user-country" class="bg-gray-100 text-xs font-bold py-1.5 px-2 rounded-lg border">
+                        <option value="🇰🇿 Қазақстан">🇰🇿 Қазақстан</option>
+                        <option value="🇺🇸 АҚШ">🇺🇸 АҚШ</option>
+                        <option value="🇩🇪 Германия">🇩🇪 Германия</option>
+                        <option value="🇹🇷 Түркия">🇹🇷 Түркия</option>
+                        <option value="🇬🇧 Ұлыбритания">🇬🇧 Ұлыбритания</option>
+                    </select>
+                    <button onclick="addPost()" id="btn-send-post" class="bg-amber-800 hover:bg-amber-900 text-white font-bold px-4 py-2 rounded-xl text-xs shadow">
+                        Жіберу
+                    </button>
+                </div>
+            </div>
+            <div id="feed-list" class="space-y-3"></div>
+        </div>
+
+        <!-- Tab 5: Cart View -->
+        <div id="tab-cart" class="tab-content hidden">
+            <h2 class="text-lg font-bold mb-3" id="cart-header">Себет</h2>
+            <div id="cart-content-area" class="space-y-3 mb-5"></div>
+            
+            <div id="cart-checkout-box" class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm space-y-3 hidden">
+                <div class="border-t pt-2 flex justify-between font-bold text-base">
+                    <span id="total-text">Жалпы сома:</span>
+                    <span id="cart-total-price" class="text-amber-800">$0.00</span>
+                </div>
+                <button onclick="checkout()" class="w-full bg-amber-800 hover:bg-amber-900 text-white font-bold py-3 rounded-xl transition shadow-md text-sm" id="btn-pay">
+                    Тапсырысты Төлеу
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab 6: Profile View -->
+        <div id="tab-profile" class="tab-content hidden">
+            <div id="auth-form" class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm max-w-md mx-auto text-center">
+                <div class="w-14 h-14 bg-amber-100 text-amber-800 rounded-full mx-auto flex items-center justify-center text-xl font-bold mb-3">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <h2 class="font-bold text-lg mb-1" id="auth-title">Жүйеге Тіркелу</h2>
+                <p class="text-gray-500 text-xs mb-5" id="auth-desc">Жеке кабинетіңізді ашып, қауіпсіз тіркеліңіз</p>
+                
+                <form onsubmit="handleRegister(event)" class="space-y-3 text-left">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1" id="lbl-reg-name">Атыңыз</label>
+                        <input type="text" id="reg-name" required placeholder="Есіміңізді енгізіңіз" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-800">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1" id="lbl-reg-surname">Фамилиясы</label>
+                        <input type="text" id="reg-surname" required placeholder="Тегіңізді енгізіңіз" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-800">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1" id="lbl-reg-nickname">Лақап аты (Никнейм)</label>
+                        <input type="text" id="reg-nickname" required placeholder="User_KZ" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-800">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1" id="lbl-reg-phone">Телефон нөміріңіз</label>
+                        <input type="tel" id="reg-phone" required placeholder="+7 (777) 000-00-00" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-800">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1" id="lbl-reg-email">Электронды пошта (Gmail)</label>
+                        <input type="email" id="reg-email" required placeholder="user@gmail.com" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-800">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1" id="lbl-reg-pin">4 санды PIN-код (Пароль)</label>
+                        <input type="password" maxlength="4" pattern="\d{4}" id="reg-pin" required placeholder="****" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-xs text-center font-bold tracking-widest focus:outline-none focus:border-amber-800">
+                    </div>
+                    <button type="submit" id="btn-submit-reg" class="w-full bg-amber-800 hover:bg-amber-900 text-white font-bold py-2.5 rounded-xl transition shadow-md text-xs">
+                        Тіркелу / Кіру
+                    </button>
+                </form>
+            </div>
+
+            <!-- Profile Dashboard -->
+            <div id="user-profile" class="hidden max-w-md mx-auto">
+                <div class="bg-black text-white rounded-t-2xl p-4 text-center relative shadow-md">
+                    <h2 class="text-xs font-bold tracking-widest uppercase text-gray-400 mb-2" id="lbl-top-setting">Баптаулар</h2>
+                    <div class="relative w-16 h-16 mx-auto cursor-pointer" onclick="openPhotoModal()">
+                        <div id="profile-avatar-container" class="w-16 h-16 rounded-full border-2 border-gray-600 shadow-md flex items-center justify-center text-white text-2xl font-black bg-amber-800 overflow-hidden">
+                            <span id="profile-avatar-letter">U</span>
+                        </div>
+                        <div class="absolute bottom-0 right-0 w-6 h-6 bg-orange-500 rounded-full border-2 border-black flex items-center justify-center text-white text-[10px] shadow">
+                            <i class="fa-solid fa-camera"></i>
+                        </div>
+                        <input type="file" id="avatar-file-input" accept="image/*" class="hidden" onchange="uploadAvatar(event)">
+                    </div>
+                    <button onclick="openPhotoModal()" class="text-orange-400 text-xs font-bold hover:underline mt-1 block mx-auto" id="lbl-change-photo">
+                        Суретті өзгерту
+                    </button>
+                    <h3 class="font-bold text-sm text-white mt-1" id="profile-display-fullname">Қолданушы Аты</h3>
+                    <p class="text-[11px] text-amber-400 font-semibold" id="profile-display-nickname">@User_KZ</p>
+                </div>
+
+                <div class="bg-white rounded-b-2xl p-4 border border-t-0 border-gray-200 shadow-sm space-y-3 text-xs">
+                    <div>
+                        <h4 class="font-bold text-black text-xs uppercase tracking-wider mb-2" id="lbl-main-section">Негізгі</h4>
+                        <div class="flex items-center justify-between py-2 border-b">
+                            <span class="text-gray-700" id="lbl-notifications">Хабарландырулар</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="notif-toggle" checked class="sr-only peer">
+                                <div class="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-500"></div>
+                            </label>
+                        </div>
+                        <div onclick="openPaymentModal()" class="flex items-center justify-between py-2 border-b cursor-pointer hover:bg-gray-50 px-1 rounded">
+                            <span class="text-gray-700" id="lbl-payment">Төлем әдісі</span>
+                            <span class="font-bold text-gray-600" id="payment-display-text">Visa **** <i class="fa-solid fa-chevron-right ml-1"></i></span>
+                        </div>
+                        <div class="flex items-center justify-between py-2 border-b">
+                            <span class="text-gray-700" id="lbl-app-lang">Бағдарлама тілі</span>
+                            <select id="profile-lang-select" onchange="changeLanguage(this.value)" class="bg-gray-100 border rounded-lg px-2 py-1 font-bold focus:outline-none">
+                                <option value="kk">🇰🇿 Қазақша</option>
+                                <option value="ru">🇷🇺 Русский</option>
+                                <option value="en">🇬🇧 English</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center justify-between py-2 border-b">
+                            <span class="text-gray-700 font-medium" id="lbl-app-curr">Валютаны ауыстыру</span>
+                            <select id="profile-currency-select" onchange="changeCurrency(this.value)" class="bg-gray-100 border rounded-lg px-2 py-1 font-bold focus:outline-none text-amber-800">
+                                <option value="KZT">₸ KZT (Теңге)</option>
+                                <option value="USD">$ USD (Доллар)</option>
+                                <option value="RUB">₽ RUB (Рубль)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="pt-1">
+                        <h4 class="font-bold text-black text-xs uppercase tracking-wider mb-2" id="lbl-security-section">Қауіпсіздік</h4>
+                        <div onclick="openEditProfileModal()" class="flex items-center justify-between py-2 border-b cursor-pointer hover:bg-gray-50 px-1 rounded font-semibold text-amber-900">
+                            <span class="flex items-center"><i class="fa-solid fa-user-pen mr-2 text-orange-500"></i><span id="lbl-edit-profile">Профильді өңдеу</span></span>
+                            <i class="fa-solid fa-chevron-right text-gray-400"></i>
+                        </div>
+                        <div onclick="openPinModal()" class="flex items-center justify-between py-2 border-b cursor-pointer hover:bg-gray-50 px-1 rounded">
+                            <span class="text-gray-700" id="lbl-change-code">Кодты өзгерту</span>
+                            <i class="fa-solid fa-chevron-right text-gray-400"></i>
+                        </div>
+                        <div onclick="startPhoneChangeProcess()" class="flex items-center justify-between py-2 border-b cursor-pointer hover:bg-gray-50 px-1 rounded">
+                            <div>
+                                <span class="text-gray-700 block" id="lbl-change-phone">Телефон нөмірін өзгерту</span>
+                                <span class="text-[10px] text-gray-400" id="sec-display-phone">+7 (777) 000-00-00</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </div>
+
+                    <div class="pt-1">
+                        <div class="grid grid-cols-2 gap-2 my-2">
+                            <div class="bg-gray-50 p-2.5 rounded-xl text-center border">
+                                <span class="block font-black text-amber-800 text-sm" id="profile-orders-count">0</span>
+                                <span class="text-[10px] text-gray-500 font-semibold" id="lbl-stat-orders">Тапсырыстар</span>
+                            </div>
+                            <div class="bg-gray-50 p-2.5 rounded-xl text-center border">
+                                <span class="block font-black text-amber-800 text-sm" id="profile-bonus-count">0</span>
+                                <span class="text-[10px] text-gray-500 font-semibold" id="lbl-stat-bonus">Бонустар</span>
+                            </div>
+                        </div>
+
+                        <h3 class="font-bold text-xs mb-2 text-gray-700 mt-3" id="lbl-order-history">Тапсырыстар тарихы:</h3>
+                        <div id="profile-orders-list" class="space-y-2 max-h-32 overflow-y-auto pr-1">
+                            <p class="text-xs text-gray-400 text-center py-2" id="lbl-no-orders">Әлі тапсырыстар жоқ</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-3 border border-gray-200 shadow-sm text-center cursor-pointer hover:bg-red-50 transition mt-3" onclick="handleLogout()">
+                    <span class="text-red-600 font-bold text-xs" id="lbl-logout">Шығу</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL 1: Photo Profile -->
+    <div id="photo-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-4 w-full max-w-xs space-y-2 text-center shadow-xl">
+            <h3 class="font-bold text-sm text-gray-700 mb-2" id="lbl-photo-modal-title">Профиль суреті</h3>
+            <button onclick="document.getElementById('avatar-file-input').click(); closePhotoModal();" class="w-full py-2 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold text-xs text-gray-800 transition" id="lbl-photo-change-btn">Суретті өңдеу</button>
+            <button onclick="removeAvatar(); closePhotoModal();" class="w-full py-2 bg-gray-100 hover:bg-red-50 rounded-xl font-bold text-xs text-red-600 transition" id="lbl-photo-remove-btn">Жою</button>
+            <button onclick="closePhotoModal()" class="w-full py-2 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold text-xs text-gray-500 transition" id="lbl-photo-cancel-btn">Бас тарту</button>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Edit Profile -->
+    <div id="edit-profile-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-5 w-full max-w-sm space-y-3 shadow-xl">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-bold text-sm text-gray-800" id="lbl-edit-modal-title">Профильді өңдеу</h3>
+                <button onclick="closeEditProfileModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="space-y-2 text-xs">
+                <div>
+                    <label class="block text-gray-600 font-bold mb-1" id="lbl-edit-fn">Аты</label>
+                    <input type="text" id="edit-firstname" class="w-full border rounded-xl p-2 focus:outline-none focus:border-orange-500">
+                </div>
+                <div>
+                    <label class="block text-gray-600 font-bold mb-1" id="lbl-edit-ln">Фамилиясы</label>
+                    <input type="text" id="edit-lastname" class="w-full border rounded-xl p-2 focus:outline-none focus:border-orange-500">
+                </div>
+                <div>
+                    <label class="block text-gray-600 font-bold mb-1" id="lbl-edit-nn">Лақап аты (Никнейм)</label>
+                    <input type="text" id="edit-nickname" class="w-full border rounded-xl p-2 focus:outline-none focus:border-orange-500">
+                </div>
+                <div>
+                    <label class="block text-gray-600 font-bold mb-1" id="lbl-edit-gen">Жынысы</label>
+                    <select id="edit-gender" class="w-full border rounded-xl p-2 focus:outline-none focus:border-orange-500 bg-white">
+                        <option value="Er">Ер</option>
+                        <option value="Ayel">Әйел</option>
+                        <option value="Korsetilmegen">Көрсетілмеген</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="saveProfileChanges()" id="lbl-edit-save-btn" class="w-full py-2.5 bg-amber-800 hover:bg-amber-900 text-white font-bold rounded-xl shadow transition text-xs mt-2">Сақтау</button>
+        </div>
+    </div>
+
+    <!-- MODAL 3: SMS OTP verification -->
+    <div id="otp-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl text-center">
+            <div class="w-12 h-12 bg-amber-100 text-amber-800 rounded-full mx-auto flex items-center justify-center text-lg font-bold">
+                <i class="fa-solid fa-comment-sms"></i>
+            </div>
+            <h3 class="font-bold text-sm text-gray-800" id="lbl-otp-title">SMS Кодты Растау</h3>
+            <p class="text-xs text-gray-500" id="otp-phone-message">Нөмірге 4 санды код жіберілді</p>
+            <input type="text" id="otp-input" maxlength="4" placeholder="1234" class="w-full border rounded-xl p-2 text-center text-lg font-bold tracking-widest focus:outline-none focus:border-orange-500">
+            <div class="flex space-x-2">
+                <button onclick="closeOtpModal()" id="lbl-otp-cancel" class="w-1/2 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold text-xs text-gray-600">Бас тарту</button>
+                <button onclick="verifyOtpCode()" id="lbl-otp-verify" class="w-1/2 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs shadow">Растау</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: Payment Visa -->
+    <div id="payment-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-5 w-full max-w-sm space-y-3 shadow-xl text-left">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-sm text-gray-800" id="lbl-pay-title">Visa картасын қосу</h3>
+                <button onclick="closePaymentModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="space-y-2.5 text-xs">
+                <div>
+                    <label class="block text-gray-600 font-bold mb-1" id="lbl-pay-name">Карта иесінің аты-жөні</label>
+                    <input type="text" id="visa-holder-name" placeholder="FIRSTNAME LASTNAME" class="w-full border rounded-xl p-2 focus:outline-none focus:border-orange-500 uppercase">
+                </div>
+                <div>
+                    <label class="block text-gray-600 font-bold mb-1" id="lbl-pay-num">Карта нөмірі</label>
+                    <input type="text" id="visa-card-number" maxlength="19" placeholder="4000 1234 5678 9010" class="w-full border rounded-xl p-2 focus:outline-none focus:border-orange-500">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-gray-600 font-bold mb-1" id="lbl-pay-exp">Мерзімі (АА/ЖЖ)</label>
+                        <input type="text" id="visa-exp" placeholder="12/28" class="w-full border rounded-xl p-2 focus:outline-none focus:border-orange-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-600 font-bold mb-1">CVV / CVC</label>
+                        <input type="password" maxlength="3" placeholder="123" class="w-full border rounded-xl p-2 focus:outline-none focus:border-orange-500">
+                    </div>
+                </div>
+            </div>
+            <button onclick="savePaymentCard()" id="lbl-pay-save-btn" class="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow transition text-xs">Келісемін</button>
+        </div>
+    </div>
+
+    <!-- MODAL 5: Add New Product -->
+    <div id="add-product-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-5 w-full max-w-sm space-y-3 shadow-xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-bold text-sm text-gray-800" id="lbl-add-prod-modal-title">Жаңа товар қосу</h3>
+                <button onclick="closeAddProductModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handleAddNewProduct(event)" class="space-y-2.5 text-xs">
+                <div>
+                    <label class="block text-gray-600 font-bold mb-1" id="lbl-new-pname">Товардың аты</label>
+                    <input type="text" id="new-prod-name" required placeholder="Мысалы: Қолдан тоқылған киіз" class="w-full border rounded-xl p-2 focus:outline-none focus:border-orange-500">
+                </div>
+                <div>
+                    <label class="block text-gray-600 font-bold mb-1" id="lbl-new-pcat">Санаты</label>
+                    <select id="new-prod-cat" class="w-full border rounded-xl p-2 focus:outline-none focus:border-orange-500 bg-white">
+                        <option value="craft">Қолөнер бұйымдары</option>
+                        <option value="clothes">Ұлттық киімдер</option>
+                        <option value="headwear">Бас киімдер</option>
+                        <option value="food">Ұзақ сақталатын тағамдар</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-600 font-bold mb-1" id="lbl-new-pprice">Бағасы ($ USD)</label>
+                    <input type="number" id="new-prod-price" required min="1" placeholder="45" class="w-full border rounded-xl p-2 focus:outline-none focus:border-orange-500">
+                </div>
+                <div>
+                    <label class="block text-gray-600 font-bold mb-1" id="lbl-new-pimg">Сурет URL сілтемесі</label>
+                    <input type="text" id="new-prod-img" required placeholder="https://..." class="w-full border rounded-xl p-2 focus:outline-none focus:border-orange-500">
+                </div>
+                <div>
+                    <label class="block text-gray-600 font-bold mb-1" id="lbl-new-pdesc">Толық ақпарат (Сипаттамасы)</label>
+                    <textarea id="new-prod-desc" required rows="3" placeholder="Табиғи материалдан жасалған..." class="w-full border rounded-xl p-2 focus:outline-none focus:border-orange-500 resize-none"></textarea>
+                </div>
+                <button type="submit" id="lbl-new-psubmit" class="w-full py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow transition text-xs mt-2">Жариялау</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 6: Product Detail Modal -->
+    <div id="product-detail-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl w-full max-w-md max-h-[92vh] overflow-y-auto relative shadow-2xl flex flex-col justify-between">
+            <button onclick="closeProductDetailModal()" class="absolute top-3 left-3 w-8 h-8 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full flex items-center justify-center z-10 transition">
+                <i class="fa-solid fa-arrow-left text-sm"></i>
+            </button>
+
+            <div class="p-4 pt-12 space-y-3">
+                <div class="w-full h-56 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center shadow-inner">
+                    <img id="detail-prod-img" src="" class="w-full h-full object-cover">
+                </div>
+
+                <div class="flex items-center justify-between border-b pb-2">
+                    <div>
+                        <h2 id="detail-prod-name" class="font-bold text-base text-gray-800"></h2>
+                        <span id="detail-prod-price" class="font-black text-xl text-amber-800"></span>
+                    </div>
+                    <button id="detail-fav-btn" class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center shadow transition hover:scale-110">
+                        <i id="detail-fav-heart" class="fa-regular fa-heart text-xl text-gray-400"></i>
+                    </button>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-xs text-gray-500 uppercase tracking-wider mb-1" id="lbl-detail-info-title">Ақпарат</h4>
+                    <p id="detail-prod-desc" class="text-xs text-gray-700 leading-relaxed"></p>
+                </div>
+
+                <div class="border-t pt-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-bold text-xs text-gray-800"><span id="lbl-detail-rev-title">Пікірлер</span> (<span id="detail-reviews-count">0</span>)</h4>
+                        <button onclick="openAddReviewModal()" id="lbl-detail-add-rev-btn" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-[11px] px-2.5 py-1 rounded-lg transition">
+                            <i class="fa-solid fa-plus mr-1"></i> Пікір қосу
+                        </button>
+                    </div>
+                    <div id="detail-reviews-list" class="space-y-2 max-h-40 overflow-y-auto pr-1"></div>
+                </div>
+            </div>
+
+            <div class="p-3 bg-gray-50 border-t sticky bottom-0 rounded-b-2xl grid grid-cols-2 gap-2">
+                <button id="detail-buy-now-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition">Қазір сатып алу</button>
+                <button id="detail-add-cart-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition">Себетке салу</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 7: Добавить отзыв -->
+    <div id="add-review-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-bold text-sm text-gray-800" id="lbl-rev-modal-title">Отзыв қалдыру</h3>
+                <button onclick="closeAddReviewModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="space-y-2.5 text-xs">
+                <div class="text-center">
+                    <label class="block text-gray-600 font-bold mb-1" id="lbl-rev-rate-label">Бағалау (1-5 жұлдыз)</label>
+                    <div class="star-rating text-amber-400 text-xl space-x-1" id="review-stars">
+                        <i class="fa-solid fa-star" onclick="setReviewRating(1)"></i>
+                        <i class="fa-solid fa-star" onclick="setReviewRating(2)"></i>
+                        <i class="fa-solid fa-star" onclick="setReviewRating(3)"></i>
+                        <i class="fa-solid fa-star" onclick="setReviewRating(4)"></i>
+                        <i class="fa-solid fa-star" onclick="setReviewRating(5)"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-600 font-bold mb-1" id="lbl-rev-text-label">Пікіріңіз</label>
+                    <textarea id="review-text" rows="3" placeholder="Өнімнің сапасы өте тамаша..." class="w-full border rounded-xl p-2 focus:outline-none focus:border-orange-500 resize-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-gray-600 font-bold mb-1" id="lbl-rev-img-label">Сурет URL (қосымша)</label>
+                    <input type="text" id="review-img" placeholder="https://..." class="w-full border rounded-xl p-2 focus:outline-none focus:border-orange-500">
+                </div>
+            </div>
+
+            <button onclick="submitReview()" id="lbl-rev-submit-btn" class="w-full py-2 bg-amber-800 hover:bg-amber-900 text-white font-bold rounded-xl shadow transition text-xs">Жіберу</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
+        <div class="max-w-6xl mx-auto flex justify-around py-2">
+            <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center text-amber-800">
+                <i class="fa-solid fa-house text-lg"></i>
+                <span class="text-[11px] font-semibold" id="lbl-home">Басты бет</span>
+            </button>
+            <button onclick="switchTab('favorites')" id="nav-favorites" class="nav-btn flex flex-col items-center text-gray-400">
+                <i class="fa-solid fa-heart text-lg"></i>
+                <span class="text-[11px] font-semibold" id="lbl-fav">Таңдаулылар</span>
+            </button>
+            <button onclick="switchTab('search')" id="nav-search" class="nav-btn flex flex-col items-center text-gray-400">
+                <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                <span class="text-[11px] font-semibold" id="lbl-search">Іздеу</span>
+            </button>
+            <button onclick="switchTab('chat')" id="nav-chat" class="nav-btn flex flex-col items-center text-gray-400">
+                <i class="fa-solid fa-comments text-lg"></i>
+                <span class="text-[11px] font-semibold" id="lbl-chat">Чат</span>
+            </button>
+            <button onclick="switchTab('cart')" id="nav-cart" class="nav-btn flex flex-col items-center text-gray-400 relative">
+                <i class="fa-solid fa-cart-shopping text-lg"></i>
+                <span id="cart-badge" class="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center hidden">0</span>
+                <span class="text-[11px] font-semibold" id="lbl-cart">Себет</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // Дәл сұралған мөлшерде жасалған 64 өнім (Қолөнер: 15, Киім: 20, Бас киім: 13, Тағам: 16)
+        let products = [
+            // 🎨 Қолөнер бұйымдары (15)
+            { id: 1, category: "craft", priceUSD: 85, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQv4mF5zKAy_mrkrDWjwJm2qRs8ZCCKVj3G62ZNGEABUQ&s=10", name_kk: "Қолдан Ойылған Емен Астау", name_ru: "Резное дубовое Астау", name_en: "Handcrafted Oak Astau", desc_kk: "Таза емен ағашынан ойылып жасалған ұлттық астау.", desc_ru: "Национальное астау из дуба.", desc_en: "Oak Astau dish." },
+            { id: 2, category: "craft", priceUSD: 45, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSK4yuB08-16Z4cJaPQMiuHszabshH3ILN6WZJsHeJ90g&s=10", name_kk: "Күміс Қазақы Білезік", name_ru: "Серебряный браслет", name_en: "Silver Bracelet", desc_kk: "925 даралы таза күміс білезік.", desc_ru: "Браслет из серебра 925 пробы.", desc_en: "Silver 925 bracelet." },
+            { id: 3, category: "craft", priceUSD: 30, img: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=400&q=80", name_kk: "Оюлы Қымыз Тостаған", name_ru: "Пиала для кумыса", name_en: "Koumiss Bowl", desc_kk: "Қымызға арналған ағаш тостаған.", desc_ru: "Деревянная чаша для кумыса.", desc_en: "Wooden bowl for koumiss." },
+            { id: 4, category: "craft", priceUSD: 120, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwrVUnACmWjOeaBoqgzMJsfSQx_Kj5qZXCjK1xgk_xxQ&s=10", name_kk: "Қолдан тігілген түскиіз", name_ru: "Настенный Тұскиіз", name_en: "Tuskiiz Tapestry", desc_kk: "Қолдан өрнектелген тұскиіз.", desc_ru: "Настенный ковер ручной работы.", desc_en: "Handmade wall hanging." },
+            { id: 5, category: "craft", priceUSD: 35, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSX0sZLEctcfF3UKoz5lVwCrHAlGpj8oNmUUjqfrIAPVg&s=10", name_kk: "Нағыз Былғарыдан Қамшы", name_ru: "Кожаная Камча", name_en: "Leather Kamcha", desc_kk: "Дәстүрлі өрім қамшы.", desc_ru: "Традиционная плетка.", desc_en: "Traditional leather whip." },
+            { id: 6, category: "craft", priceUSD: 95, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_CgLI3OIFzA5m36LjcxzgfBIv7NFe7vUmm9oUcSL9dg&s=10", name_kk: "Киіз Үй Макеті", name_ru: "Макет Юрты", name_en: "Yurt Souvenir", desc_kk: "Кішірейтілген киіз үй сувенирі.", desc_ru: "Сувенирная юрта.", desc_en: "Miniature yurt model." },
+            { id: 7, category: "craft", priceUSD: 110, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp2AHHvADvOurhB4SGfbAJKzqA8_ghGLziPYY2PVRj0A&s", name_kk: "Қазақы Күміс Өңіржиек", name_ru: "Серебряный Өңіржиек", name_en: "Silver Ungirzhiek", desc_kk: "Күмістен соғылған өңіржиек.", desc_ru: "Традиционное украшение.", desc_en: "Traditional chest ornament." },
+            { id: 8, category: "craft", priceUSD: 40, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRa6ERZk3M9Far0fQuxnnb31oM2ztmr52ygVdDnBq8jDw&s=10", name_kk: "Ағаш Торсық", name_ru: "Деревянный Торсык", name_en: "Wooden Torsyk", desc_kk: "Өрнекті ағаш торсық.", desc_ru: "Сосуд для напитков.", desc_en: "Traditional flask." },
+            { id: 9, category: "craft", priceUSD: 50, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrA7XCYTN3CseSJSOA78JzIqRtIkoKLeX0uprctyYySg&s=10", name_kk: "Былғары Торсық", name_ru: "Кожаный Торсык", name_en: "Leather Torsyk", desc_kk: "Табиғи былғары торсық.", desc_ru: "Кожаный сосуд.", desc_en: "Leather flask." },
+            { id: 10, category: "craft", priceUSD: 25, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-pHqnhBHgIHdbdAdwZ5JjPj9m6z2bqohpgAc-Y1XLhw&s=10", name_kk: "Ағаш Ожау", name_ru: "Деревянный Ожау", name_en: "Wooden Ladle", desc_kk: "Оюлы ағаш ожау.", desc_ru: "Резной половник.", desc_en: "Wooden ladle." },
+            { id: 11, category: "craft", priceUSD: 55, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSy-wYbGMeeq6eLTKHirvk5tmLiBndVgeEla2fPZsDsA&s=10", name_kk: "Күміс Сырға", name_ru: "Серебряные Серьги", name_en: "Silver Earrings", desc_kk: "Салпыншақты күміс сырға.", desc_ru: "Национальные серьги.", desc_en: "Silver earrings." },
+            { id: 12, category: "craft", priceUSD: 150, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBvYu2hKBrfwG_9-Tg0xMd2WdIM46IKBh_FOOKoIrMnQ&s=10", name_kk: "Қолдан жасалған Домбыра", name_ru: "Домбра ручной работы", name_en: "Handmade Dombra", desc_kk: "Кәсіби ұлттық домбыра.", desc_ru: "Профессиональная домбра.", desc_en: "Traditional Dombra." },
+            { id: 13, category: "craft", priceUSD: 80, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRg3TeuoqUTBb6z5fqBX3iXNuz0dK-vACc9MDFN82s5-Q&s=10", name_kk: "Киіз Төсеніш Сырмақ", name_ru: "Войлочный Сырмак", name_en: "Felt Syrmak", desc_kk: "Табиғи жүннен жасалған сырмақ.", desc_ru: "Войлочный ковер.", desc_en: "Felt rug." },
+            { id: 14, category: "craft", priceUSD: 65, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLv9Beoe0aBcrjzrmiw6A9bjs5fkDi1TtXIZO3q0YfhQ&s=10", name_kk: "Ағаш Сандықша", name_ru: "Деревянная шкатулка", name_en: "Wooden Box", desc_kk: "Оюлы шағын сандық.", desc_ru: "Резная шкатулка.", desc_en: "Carved wooden box." },
+            { id: 15, category: "craft", priceUSD: 75, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRFOpavd_wZckYvMKH5lUMzCwmKOaOfTtvo3qAb3yu2A&s=10", name_kk: "Мүйізді Аңшы Пышағы", name_ru: "Охотничий нож", name_en: "Hunting Knife", desc_kk: "Сүйекпен сапталған пышақ.", desc_ru: "Нож с рукоятью из кости.", desc_en: "Bone-handled knife." },
+
+            // 🧥 Ұлттық киімдер (20)
+            { id: 21, category: "clothes", priceUSD: 140, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRuhiaLUKoVlClTH9l2mrUFB8hVNjPqwazZOiTcszdpw&s=10", name_kk: "Қолмен Кестеленген Шапан", name_ru: "Вышитый Шапан", name_en: "Embroidered Shapan", desc_kk: "Алтын жіппен өрнектелген шапан.", desc_ru: "Шапан с узорами.", desc_en: "Embroidered robe." },
+            { id: 22, category: "clothes", priceUSD: 95, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2XsD9AfyRgFMM1fThyaeTly3gU8atikayKty4zIaJsw&s=10", name_kk: "Былғары Кеудеше", name_ru: "Кожаный жилет", name_en: "Leather Vest", desc_kk: "Этно-стильдегі былғары кеудеше.", desc_ru: "Жилет из кожи.", desc_en: "Leather vest." },
+            { id: 23, category: "clothes", priceUSD: 220, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTN71pT89KDYKMpoo7T6ZFW-c1bgpQw3whaHolWc4Jjw&s=10", name_kk: "Қыз Ұзату Көйлегі", name_ru: "Платье невесты", name_en: "Bridal Dress", desc_kk: "Жібек матадан тігілген көйлек.", desc_ru: "Традиционное платье.", desc_en: "Traditional dress." },
+            { id: 24, category: "clothes", priceUSD: 160, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1Vj-3PLNvBR0g6aArwYqh8Eq1m_nZQdKK1RgHlylaOA&s=10", name_kk: "Алтын Кестелі Шапан", name_ru: "Парадный Шапан", name_en: "Formal Shapan", desc_kk: "Сыйлы қонаққа арналған шапан.", desc_ru: "Почетный шапан.", desc_en: "Formal robe." },
+            { id: 25, category: "clothes", priceUSD: 85, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMx4ZRAg-_ZJ8DlI2V7Dj0neVqoNSniNZS3tyUGmbPQg&s=10", name_kk: "Барқыт Камзол", name_ru: "Бархатный Камзол", name_en: "Velvet Kamzol", desc_kk: "Оюлы барқыт камзол.", desc_ru: "Бархатный камзол.", desc_en: "Velvet vest." },
+            { id: 26, category: "clothes", priceUSD: 65, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHUHKsHaNE7_KSJUx5wgB_h9ur6aw9_riVDmgOMP7Utrsc4ZRJi_Oey-Q&s=10", name_kk: "Этно Жұқа Камзол", name_ru: "Лёгкий камзол", name_en: "Light Kamzol", desc_kk: "Күнделікті этно камзол.", desc_ru: "Повседневный камзол.", desc_en: "Casual ethnic vest." },
+            { id: 27, category: "clothes", priceUSD: 250, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHUHKsHaNE7_KSJUx5wgB_h9ur6aw9_riVDmgOMP7Utrsc4ZRJi_Oey-Q&s=10", name_kk: "Қой Жүнінен Ішік", name_ru: "Зимний Шуганай", name_en: "Sheepskin Coat", desc_kk: "Қысқы табиғи ішік.", desc_ru: "Теплая шуба.", desc_en: "Warm winter coat." },
+            { id: 28, category: "clothes", priceUSD: 50, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQe1YtLQkUXsB7m3yT9gAag6LuUfeS96M5a189vqU9cpA&s=10", name_kk: "Балалар Шапаны", name_ru: "Детский Шапан", name_en: "Kids Shapan", desc_kk: "Мерекелік балалар шапаны.", desc_ru: "Детский праздничный шапан.", desc_en: "Kids festive robe." },
+            { id: 29, category: "clothes", priceUSD: 110, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFHuV7GtdzouHHfluADvrDkS9idRAvbr92b9FGYQgUQg&s=10", name_kk: "Оюлы Бомбер", name_ru: "Этно Бомбер", name_en: "Ethnic Bomber", desc_kk: "Заманауи оюлы бомбер.", desc_ru: "Современный бомбер.", desc_en: "Modern ethnic bomber." },
+            { id: 30, category: "clothes", priceUSD: 35, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQv9PdinR689qFyo1YDDEe_-mY7DVj7Rj47uqf8K6AMsw&s=10", name_kk: "Жібек Шәлі", name_ru: "Шелковый Шаль", name_en: "Silk Shawl", desc_kk: "Табиғи жібек шәлі.", desc_ru: "Шелковый платок.", desc_en: "Silk shawl." },
+            { id: 31, category: "clothes", priceUSD: 310, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjfIl_mNtPtpgG4gwTRPqwovf24xV-olcZ-qn5-48qPA&s=10", name_kk: "Ұзату Жиынтығы", name_ru: "Свадебный комплект", name_en: "Bridal Set", desc_kk: "Толық ұзату жиынтығы.", desc_ru: "Полный комплект на невесту.", desc_en: "Complete bridal outfit." },
+            { id: 32, category: "clothes", priceUSD: 130, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSN_zAsxxuj_J-gJxlHVXdFeZssCzbj-fKhp0DsdKT45w&s=10", name_kk: "Түйе Жүн Күпі", name_ru: "Верблюжий Купи", name_en: "Camel Wool Jacket", desc_kk: "Жылы түйе жүн күпі.", desc_ru: "Теплая куртка.", desc_en: "Camel wool jacket." },
+            { id: 33, category: "clothes", priceUSD: 45, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRraEf5dRv-BKs6jjJ24FyZoPVbZA81WAw2DFT4g6ou1w&s=10", name_kk: "Қыз Балалар Камзолы", name_ru: "Детский камзол", name_en: "Girls Kamzol", desc_kk: "Сәнді қыздар камзолы.", desc_ru: "Красивый камзол.", desc_en: "Girls ethnic vest." },
+            { id: 34, category: "clothes", priceUSD: 75, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_-7eyrbx5LZ-PwPwNJ6QHGdLn7Q_eFRyZHF4rBRApAw&s=10", name_kk: "Этно Кардиган", name_ru: "Этно Кардиган", name_en: "Ethnic Cardigan", desc_kk: "Әйелдерге арналған кардиган.", desc_ru: "Женский кардиган.", desc_en: "Women's cardigan." },
+            { id: 35, category: "clothes", priceUSD: 180, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpyb-3EW5PSKDcR2zekj-D4HDftKbSLQk3Nrdn1UUaBA&s=10", name_kk: "Сахналық Ұлттық Киім", name_ru: "Сценический костюм", name_en: "Stage Costume", desc_kk: "Өнерпаздарға арналған киім.", desc_ru: "Костюм для выступлений.", desc_en: "Performance costume." },
+            { id: 36, category: "clothes", priceUSD: 90, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5kAqulJyt2z_toveguwM29JykqSwfWvf1QRixovSq-g&s=10", name_kk: "Күміс Шытыралы Белбеу", name_ru: "Кожаный пояс", name_en: "Leather Belt", desc_kk: "Күміс әшекейлі белбеу.", desc_ru: "Пояс с бляшками.", desc_en: "Silver-decorated belt." },
+            { id: 37, category: "clothes", priceUSD: 18, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWSDkeAgrY7Sel9xGDBGMG3ccUzNG9wthhWBueaVe32Q&s=10", name_kk: "Түйе Жүн Шұлық", name_ru: "Верблюжьи носки", name_en: "Camel Wool Socks", desc_kk: "Табиғи жүн шұлықтар (3 жұп).", desc_ru: "Теплые носки.", desc_en: "Warm wool socks." },
+            { id: 38, category: "clothes", priceUSD: 105, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbr5C2XkWaMSnlCVRaUNN0ej5JHnXAk1DCs6TTUh0UcQ&s=10", name_kk: "Этно Киіз Етік", name_ru: "Войлочные сапоги", name_en: "Felt Boots", desc_kk: "Жылы киіз етік.", desc_ru: "Теплые сапоги.", desc_en: "Warm felt boots." },
+            { id: 39, category: "clothes", priceUSD: 80, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmOPP6MatzcL7WPzwFXWXgWtGxn61VCfmdt9CoHiS2bA&s=10", name_kk: "Қазақы Пончо", name_ru: "Пончо", name_en: "Poncho", desc_kk: "Еркін үлгідегі этно пончо.", desc_ru: "Свободное пончо.", desc_en: "Ethnic poncho." },
+
+            // 🧢 Бас киімдер (13)
+            { id: 41, category: "headwear", priceUSD: 30, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAFF9LIyHX4TOh94l0LagqUR37JMSdYP5ECOQZ2wGOfA&s=10", name_kk: "Дәстүрлі Киіз Қалпақ", name_ru: "Войлочный Калпак", name_en: "Felt Kalpak", desc_kk: "Ақ қой жүнінен жасалған қалпақ.", desc_ru: "Классический калпак.", desc_en: "Traditional kalpak." },
+            { id: 42, category: "headwear", priceUSD: 20, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfiOeBgVv_9pb2Lp5Frb_WvE88b5CRVlhQQLUHMSmGzg&s=10", name_kk: "Кестелі Барқыт Тақия", name_ru: "Бархатная Такия", name_en: "Velvet Takiya", desc_kk: "Өрнекті барқыт тақия.", desc_ru: "Узорная тюбетейка.", desc_en: "Velvet skullcap." },
+            { id: 43, category: "headwear", priceUSD: 110, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEfGhJD69i-yo6EipTkaIkH-BQQEyXF6J3mkLWalzNXA&s=10", name_kk: "Құндыз Бөрiк", name_ru: "Бобровая Шапка", name_en: "Beaver Fur Hat", desc_kk: "Құндыз терісінен тігілген бөрік.", desc_ru: "Шапка из бобра.", desc_en: "Beaver fur hat." },
+            { id: 44, category: "headwear", priceUSD: 28, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRueTHj1JG_VI48T3kDNAOyR059QpciDwg2CmNP_92hbA&s=10", name_kk: "Үкілі Такия", name_ru: "Такия с перьями уки", name_en: "Owl Feather Takiya", desc_kk: "Төбесіне үкі қадалған тақия.", desc_ru: "Девичья тюбетейка.", desc_en: "Skullcap with feathers." },
+            { id: 45, category: "headwear", priceUSD: 180, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbh52gZ46T_o8EMkE-6rWxeFFyhYMf_2VTID1HZWB9Kg&s=10", name_kk: "Асыл Тасты Сәукеле", name_ru: "Сәукеле", name_en: "Saukele Headdress", desc_kk: "Салтанатты сәукеле.", desc_ru: "Свадеbный убор невесты.", desc_en: "Bridal headdress." },
+            { id: 46, category: "headwear", priceUSD: 135, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQdnxUsPMBlwR9Xnco4AOM0CW2jExFiW9iv32lOXw3Ug&s=10", name_kk: "Түлкі Тымақ", name_ru: "Лисьи Тымак", name_en: "Fox Fur Tymak", desc_kk: "Түлкі терісінен тігілген тымақ.", desc_ru: "Зимняя шапка-тымак.", desc_en: "Winter fur hat." },
+            { id: 47, category: "headwear", priceUSD: 95, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRN4EqbnUbDcstH8tX9a9zUuBrhTwMATE2yA7HLEbY8zA&s", name_kk: "Сусар Бөрiк", name_ru: "Шапка из куницы", name_en: "Marten Fur Hat", desc_kk: "Жеңіл әрі жылы бөрік.", desc_ru: "Меховая шапка.", desc_en: "Fur hat." },
+            { id: 48, category: "headwear", priceUSD: 18, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6NR6_fubz0umT1jOaBiZD_wvMIKRpAYuCVETbKNU1VQ&s=10", name_kk: "Оюлы Кепка", name_ru: "Бейсболка с узором", name_en: "Ethnic Baseball Cap", desc_kk: "Ою түсірілген кепка.", desc_ru: "Повседневная кепка.", desc_en: "Ethnic cap." },
+            { id: 49, category: "headwear", priceUSD: 120, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5pCKGhilDSIHDM1YujnWgdWAZ9Tr-y95V1kHhhqHg6Q&s=10", name_kk: "Ешкі Терісі Тымақ", name_ru: "Тымак из козьего меха", name_en: "Goat Fur Tymak", desc_kk: "Суыққа шыдамды тымақ.", desc_ru: "Теплый тымак.", desc_en: "Warm fur hat." },
+            { id: 50, category: "headwear", priceUSD: 25, img: "https://images.unsplash.com/photo-1584030373081-f37b7bb4fa8e?auto=format&fit=crop&w=400&q=80", name_kk: "Жібек Түрбан", name_ru: "Шелковый Тюрбан", name_en: "Silk Turban", desc_kk: "Сәнді этно түрбан.", desc_ru: "Женский тюрбан.", desc_en: "Silk turban." },
+            { id: 51, category: "headwear", priceUSD: 32, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwfwzv9AzDwkQpVjrhY_ax5SbNynG0SgpsD2vi5J6NdQ&s=10", name_kk: "Мерекелік Аққалпақ", name_ru: "Праздничный аккалпак", name_en: "Festive White Kalpak", desc_kk: "Мерекелік аққалпақ.", desc_ru: "Парадный калпак.", desc_en: "Festive kalpak." },
+            { id: 52, category: "headwear", priceUSD: 70, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOIlEaSk0-qsbnrJSRvIC9ndZW93G5kh9VoduPcJZT2Q&s=10", name_kk: "Қой Жүнінен Папаха", name_ru: "Папаха из шерсти", name_en: "Wool Papakha", desc_kk: "Дәстүрлі папаха.", desc_ru: "Мужская папаха.", desc_en: "Traditional papakha." },
+            { id: 53, category: "headwear", priceUSD: 40, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQN9JIBmAarbAfnUuyRC9o7fGbPEEy8zhYnN9vWUS6lPA&s=10", name_kk: "Күміс Тиынды Тақия", name_ru: "Такия с монетками", name_en: "Coin-decorated Takiya", desc_kk: "Тиындармен әшекейленген тақия.", desc_ru: "Такия с монетами.", desc_en: "Decorated skullcap." },
+
+            // 🧀 Ұзақ сақталатын тағамдар (16)
+            { id: 66, category: "food", priceUSD: 12, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6DWMBWiqwvPODOz6S8FVa1sNVSG57ccGIyS7UpfCLbA&s=10", name_kk: "Құрғақ Сарыжаз Құрты", name_ru: "Сухой курт Сарыжаз", name_en: "Dry Saryzhaz Kurut", desc_kk: "Табиғи сүттен жасалған құрт.", desc_ru: "Сушеный курт.", desc_en: "Dry cheese balls." },
+            { id: 67, category: "food", priceUSD: 25, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxzUK2hb6df_RgAtjbWXcsgkRwjReAlY2rKnS8S_Uj4Q&s=10", name_kk: "Табиғи Алтай Балы", name_ru: "Алтайский Мед", name_en: "Altai Mountain Honey", desc_kk: "Шығыс Қазақстанның таза балы.", desc_ru: "Натуральный мед.", desc_en: "Pure mountain honey." },
+            { id: 68, category: "food", priceUSD: 45, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTy7aqoAR--0FMjRgVxUxZNeBuSYy5UtF5f1l3C4hGsTA&s=10", name_kk: "Сүрленген Жылқы Еті", name_ru: "Вяленая конина", name_en: "Cured Horsemeat", desc_kk: "Ұзақ жолға шыдамды сүрленген ет.", desc_ru: "Конина в вакууме.", desc_en: "Cured horsemeat." },
+            { id: 69, category: "food", priceUSD: 15, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRefAnUIzxgRbyv1KO8xxDJsL7kMuRBMwrY0BglFJOg9Q&s=10", name_kk: "Түйе Сүтінен Құрт", name_ru: "Курт из верблюжьего молока", name_en: "Camel Milk Kurut", desc_kk: "Шұбаттан дайындалған емдік құрт.", desc_ru: "Лечебный курт из шубата.", desc_en: "Camel milk kurut." },
+            { id: 70, category: "food", priceUSD: 18, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRaSx4uR4S6dT83xXIH2oJxQD3WotLPESGYEzFTig2xeA&s=10", name_kk: "Табиғи Сары Май", name_ru: "Натуральное сливочное масло", name_en: "Natural Butter", desc_kk: "Табиғи сары май.", desc_ru: "Деревенское масло.", desc_en: "Farm butter." },
+            { id: 71, category: "food", priceUSD: 14, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHqWUp1LhrSA2JRIz6On4bTSriZKR8El_p5ZCbjo52Og&s=10", name_kk: "Шоколадталған Жент", name_ru: "Шоколадный Жент", name_en: "Chocolate Jent", desc_kk: "Талқан, май, балдан жасалған десерт.", desc_ru: "Национальный десерт жент.", desc_en: "Traditional sweet." },
+            { id: 72, category: "food", priceUSD: 16, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGqHw7DtYucLjBlfrNoqux2-qST5jxoIqDnHlXPj1J3w&s=10", name_kk: "Кептірілген Ірімшік", name_ru: "Сушеный Иримшик", name_en: "Dried Irimshik", desc_kk: "Кілегейлі тәтті ірімшік.", desc_ru: "Сладкий иримшик.", desc_en: "Sweet dried cheese." },
+            { id: 73, category: "food", priceUSD: 8, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMQ4_diQHrrrUy0hmy_cdaKJuvzxzUxJ1G_tf6_oOWgA&s=10", name_kk: "Қуырылған Бидай Талқаны", name_ru: "Талкан пшеничный", name_en: "Wheat Talkan", desc_kk: "Куат беретін табиғи талқан.", desc_ru: "Полезный талкан.", desc_en: "Roasted wheat grain." },
+            { id: 74, category: "food", priceUSD: 60, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0elTSefpaE8ARQHDHeWRKC4JkvZ9sJ4P9Q7f7qqs90g&s=10", name_kk: "Саумал Ұнтағы", name_ru: "Порошок саумала", name_en: "Saumal Powder", desc_kk: "Сублимацияланған бие сүті.", desc_ru: "Сухое кобылье молоко.", desc_en: "Dry mare milk." },
+            { id: 75, category: "food", priceUSD: 10, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNUBcehiPrFKiqe7aVs5TfXraeeOvH41BYSk1mEm94ag&s=10", name_kk: "Ащы Бұрышты Құрт", name_ru: "Острый курт с перцем", name_en: "Spicy Kurut", desc_kk: "Пикантты бұрышты құрт.", desc_ru: "Острый курт.", desc_en: "Spicy kurut." },
+            { id: 76, category: "food", priceUSD: 12, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSzUXXCHd8lr-McDu-04fPAWxf-X_Zy_vlCs3MXa19AA&s=10", name_kk: "Тау Шөп Шайы", name_ru: "Горный травяной чай", name_en: "Mountain Herbal Tea", desc_kk: "Емдік фито-шай.", desc_ru: "Полезный травяной чай.", desc_en: "Herbal tea." },
+            { id: 77, category: "food", priceUSD: 50, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbhe2TcGax5y6Bmz6QK5iOysfBsE4-4acAOZh3o0gGiQ&s", name_kk: "Сүрленген Жая", name_ru: "Жая вяленая", name_en: "Cured Zhaya", desc_kk: "Жылқы етінен жасалған деликатес.", desc_ru: "Деликатес из конины.", desc_en: "Horsemeat delicacy." },
+            { id: 78, category: "food", priceUSD: 20, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRACE-f_6hLa926VPTn7OCjSdBWmDRySxU-poJg1uCSaA&s=10", name_kk: "Сыйлықтық Жент", name_ru: "Подарочный жент", name_en: "Gift Jent Assortment", desc_kk: "Әр түрлі дәмдегі жент өнімдері.", desc_ru: "Ассорти жента.", desc_en: "Sweet assortment." },
+            { id: 79, category: "food", priceUSD: 38, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMFYKKe2a44Pwf6eER28JJYPX5QPV40XHqXzOKuvVsLg&s=10", name_kk: "Сүрленген Қой Еті", name_ru: "Вяленая баранина", name_en: "Cured Mutton", desc_kk: "Сақтау мерзімі ұзақ сүрленген ет.", desc_ru: "Вяленое мясо баранины.", desc_en: "Cured mutton." },
+            { id: 80, category: "food", priceUSD: 14, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR38e7SPKjgHRSTA6BD2kWtvL6lB6mc_lxB6UU7Q4QG7w&s=10", name_kk: "Сұйық Сықпа Құрт", name_ru: "Мягкий пастовый курт", name_en: "Soft Paste Kurut", desc_kk: "Заманауи сықпа құрт.", desc_ru: "Пастообразный курт.", desc_en: "Soft kurut paste." },
+            { id: 81, category: "food", priceUSD: 55, img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0WvMVwV8Sp6CHGwToj42eaLHwvE2GBMZJvpJCTEPYwg&s", name_kk: "Шұбат Ұнтағы", name_ru: "Сухой шубат в порошке", name_en: "Dry Shubat Powder", desc_kk: "Табиғи түйе сүтінің ұнтағы.", desc_ru: "Сухое верблюжье молоко.", desc_en: "Dry camel milk." }
+        ];
+
+        // Тілге байланысты 3 тілде аударылатын пікірлер (отзывтар)
+        let reviewsMap = {
+            1: [
+                { user: "Бекзат", rating: 5, text_kk: "Астаудың сапасы өте жоғары, рахмет!", text_ru: "Качество Астау очень высокое, спасибо!", text_en: "The quality of Astau is top-notch, thank you!" }
+            ],
+            66: [
+                { user: "Жанар", rating: 5, text_kk: "Құрты өте дәмді, ескі дағдыдай!", text_ru: "Курт очень вкусный, как в детстве!", text_en: "Kurut is extremely delicious, authentic taste!" }
+            ]
+        };
+
+        let posts = [
+            { id: 1, user: "Айдын", country: "🇺🇸 АҚШ", text: "Америкада жүріп қазақтың құртын сағынамыз!", likes: 12 }
+        ];
+
+        let cart = [];
+        let favorites = [];
+        let currency = "KZT";
+        let lang = "kk";
+        let activeCategory = "craft";
+        let currentUser = JSON.parse(localStorage.getItem('otanic_user')) || null;
+        let selectedProductForDetail = null;
+        let currentReviewRating = 5;
+        let pendingNewPhoneNumber = "";
+
+        const rates = { USD: 1, KZT: 490, RUB: 92 };
+        const symbols = { USD: "$", KZT: "₸", RUB: "₽" };
+
+        const translations = {
+            kk: { 
+                home: "Басты бет", search: "Іздеу", chat: "Чат", cart: "Себет", fav: "Таңдаулылар", 
+                heroBadge: "Халықаралық Жеткізу", heroTitle: "Қазақстанның Ең Үздік Өнімдері", 
+                heroDesc: "Шетелге бұзылмай жететін табиғи құрт, бал, ұлттық киім және қолөнер бұйымдары", 
+                heroSub: "Kazpost, DHL, FedEx арқылы әлемге", catTitle: "Санаттар (Таңдаңыз)", prodTitle: "Өнімдер тізімі", 
+                cartHeader: "Себет (Кәрзеңке)", totalText: "Жалпы сома:", btnPay: "Тапсырысты Төлеу", 
+                authTitle: "Жүйеге Тіркелу", authDesc: "Жеке кабинетіңізді ашып, қауіпсіз тіркеліңіз", 
+                searchHeaderTitle: "Өнімдерді Іздеу", searchPlaceholder: "Заттың атауын жазыңыз...", 
+                statOrders: "Тапсырыстар", statBonus: "Бонустар", orderHistory: "Тапсырыстар тарихы:", 
+                noOrders: "Әлі тапсырыстар жоқ", logout: "Шығу", topSetting: "Баптаулар", 
+                changePhoto: "Суретті өзгерту", mainSection: "Негізгі", notifications: "Хабарландырулар", 
+                payment: "Төлем әдісі", appLang: "Бағдарлама тілі", securitySection: "Қауіпсіздік", 
+                editProfile: "Профильді өңдеу", changeCode: "Кодты өзгерту", changePhone: "Телефон нөмірін өзгерту", 
+                favHeaderTitle: "Таңдаулылар", startShopping: "Сатып алуды бастау", appCurr: "Валютаны ауыстыру",
+                addProdBtn: "Товар қосу", headerProfile: "Профиль", chatDesc: "Әлемнің кез келген түкпірінен пікіріңізді қалдырыңыз!",
+                btnSendPost: "Жіберу", regName: "Атыңыз", regSurname: "Фамилиясы", regNickname: "Лақап аты (Никнейм)",
+                regPhone: "Телефон нөміріңіз", regEmail: "Электронды пошта (Gmail)", regPin: "4 санды PIN-код (Пароль)",
+                btnSubmitReg: "Тіркелу / Кіру", photoModalTitle: "Профиль суреті", photoChangeBtn: "Суретті өңдеу",
+                photoRemoveBtn: "Жою", photoCancelBtn: "Бас тарту", editModalTitle: "Профильді өңдеу",
+                editSaveBtn: "Сақтау", otpTitle: "SMS Кодты Растау", otpCancel: "Бас тарту", otpVerify: "Растау",
+                payTitle: "Visa картасын қосу", payName: "Карта иесінің аты-жөні", payNum: "Карта нөмірі",
+                payExp: "Мерзімі (АА/ЖЖ)", paySaveBtn: "Келісемін", addProdModalTitle: "Жаңа товар қосу",
+                newPname: "Товардың аты", newPcat: "Санаты", newPprice: "Бағасы ($ USD)", newPimg: "Сурет URL сілтемесі",
+                newPdesc: "Сипаттамасы", newPsubmit: "Жариялау", detailInfoTitle: "Ақпарат", detailRevTitle: "Пікірлер",
+                detailAddRevBtn: "Пікір қосу", detailBuyNow: "Қазір сатып алу", detailAddCart: "Себетке салу",
+                revModalTitle: "Отзыв қалдыру", revRateLabel: "Бағалау (1-5 жұлдыз)", revTextLabel: "Пікіріңіз",
+                revImgLabel: "Сурет URL (қосымша)", revSubmitBtn: "Жіберу",
+                catCraft: "🎨 Қолөнер бұйымдары", catClothes: "🧥 Ұлттық киімдер", catHeadwear: "🧢 Бас киімдер", catFood: "🧀 Ұзақ сақталатын тағамдар",
+                noReviews: "Әлі отзывтар жоқ. Бірінші болып пікір қалдырыңыз!",
+                addCartSuccess: "+ Қосу"
+            },
+            ru: { 
+                home: "Главная", search: "Поиск", chat: "Чат", cart: "Корзина", fav: "Избранное", 
+                heroBadge: "Международная доставка", heroTitle: "Лучшие товары Казахстана", 
+                heroDesc: "Натуральный курт, мед, национальная одежда и ремесленные изделия", 
+                heroSub: "Доставка по миру через Kazpost, DHL, FedEx", catTitle: "Категории (Выберите)", prodTitle: "Список товаров", 
+                cartHeader: "Корзина", totalText: "Итоговая сумма:", btnPay: "Оплатить заказ", 
+                authTitle: "Регистрация", authDesc: "Откройте личный кабинет и зарегистрируйтесь безопасно", 
+                searchHeaderTitle: "Поиск товаров", searchPlaceholder: "Введите название товара...", 
+                statOrders: "Заказы", statBonus: "Бонусы", orderHistory: "История заказов:", 
+                noOrders: "Заказов пока нет", logout: "Выйти", topSetting: "Настройки", 
+                changePhoto: "Изменить фото", mainSection: "Основное", notifications: "Уведомления", 
+                payment: "Способ оплаты", appLang: "Язык приложения", securitySection: "Безопасность", 
+                editProfile: "Редактировать профиль", changeCode: "Изменить код", changePhone: "Изменить номер телефона", 
+                favHeaderTitle: "Избранное", startShopping: "Начать покупки", appCurr: "Изменить валюту",
+                addProdBtn: "Добавить товар", headerProfile: "Профиль", chatDesc: "Оставляйте свои отзывы из любой точки мира!",
+                btnSendPost: "Отправить", regName: "Ваше имя", regSurname: "Фамилия", regNickname: "Никнейм",
+                regPhone: "Номер телефона", regEmail: "Электронная почта", regPin: "4-значный PIN-код",
+                btnSubmitReg: "Зарегистрироваться / Войти", photoModalTitle: "Фото профиля", photoChangeBtn: "Изменить фото",
+                photoRemoveBtn: "Удалить", photoCancelBtn: "Отмена", editModalTitle: "Редактировать профиль",
+                editSaveBtn: "Сохранить", otpTitle: "Подтверждение SMS", otpCancel: "Отмена", otpVerify: "Подтвердить",
+                payTitle: "Добавить карту Visa", payName: "Имя владельца карты", payNum: "Номер карты",
+                payExp: "Срок (ММ/ГГ)", paySaveBtn: "Согласен", addProdModalTitle: "Добавить новый товар",
+                newPname: "Название товара", newPcat: "Категория", newPprice: "Цена ($ USD)", newPimg: "URL изображения",
+                newPdesc: "Описание", newPsubmit: "Опубликовать", detailInfoTitle: "Информация", detailRevTitle: "Отзывы",
+                detailAddRevBtn: "Добавить отзыв", detailBuyNow: "Купить сейчас", detailAddCart: "В корзину",
+                revModalTitle: "Оставить отзыв", revRateLabel: "Оценка (1-5 звезд)", revTextLabel: "Ваш отзыв",
+                revImgLabel: "URL картинки (опционально)", revSubmitBtn: "Отправить",
+                catCraft: "🎨 Изделия ручной работы", catClothes: "🧥 Национальная одежда", catHeadwear: "🧢 Головные уборы", catFood: "🧀 Продукты долгого хранения",
+                noReviews: "Отзывов пока нет. Оставьте первый отзыв!",
+                addCartSuccess: "+ Добавить"
+            },
+            en: { 
+                home: "Home", search: "Search", chat: "Chat", cart: "Cart", fav: "Favorites", 
+                heroBadge: "International Shipping", heroTitle: "Best Kazakh Products", 
+                heroDesc: "Natural kurut, honey, national clothes and handicrafts for export", 
+                heroSub: "Worldwide delivery via Kazpost, DHL, FedEx", catTitle: "Categories (Select)", prodTitle: "Products List", 
+                cartHeader: "Shopping Cart", totalText: "Total Amount:", btnPay: "Proceed to Checkout", 
+                authTitle: "Sign Up", authDesc: "Create your personal account securely", 
+                searchHeaderTitle: "Search Products", searchPlaceholder: "Type product name...", 
+                statOrders: "Orders", statBonus: "Bonuses", orderHistory: "Order History:", 
+                noOrders: "No orders yet", logout: "Logout", topSetting: "Settings", 
+                changePhoto: "Change photo", mainSection: "Main", notifications: "Notifications", 
+                payment: "Payment method", appLang: "App language", securitySection: "Security", 
+                editProfile: "Edit profile", changeCode: "Change PIN code", changePhone: "Change phone number", 
+                favHeaderTitle: "Favorites", startShopping: "Start shopping", appCurr: "Change currency",
+                addProdBtn: "Add product", headerProfile: "Profile", chatDesc: "Share your thoughts from anywhere in the world!",
+                btnSendPost: "Send", regName: "First Name", regSurname: "Last Name", regNickname: "Nickname",
+                regPhone: "Phone Number", regEmail: "Email (Gmail)", regPin: "4-digit PIN Code",
+                btnSubmitReg: "Sign Up / Login", photoModalTitle: "Profile Photo", photoChangeBtn: "Change photo",
+                photoRemoveBtn: "Remove", photoCancelBtn: "Cancel", editModalTitle: "Edit Profile",
+                editSaveBtn: "Save", otpTitle: "SMS Verification", otpCancel: "Cancel", otpVerify: "Verify",
+                payTitle: "Add Visa Card", payName: "Cardholder Name", payNum: "Card Number",
+                payExp: "Expiry (MM/YY)", paySaveBtn: "Confirm", addProdModalTitle: "Add New Product",
+                newPname: "Product Name", newPcat: "Category", newPprice: "Price ($ USD)", newPimg: "Image URL",
+                newPdesc: "Description", newPsubmit: "Publish", detailInfoTitle: "Information", detailRevTitle: "Reviews",
+                detailAddRevBtn: "Add review", detailBuyNow: "Buy Now", detailAddCart: "Add to Cart",
+                revModalTitle: "Leave a Review", revRateLabel: "Rating (1-5 stars)", revTextLabel: "Your review",
+                revImgLabel: "Image URL (optional)", revSubmitBtn: "Submit",
+                catCraft: "🎨 Handicrafts", catClothes: "🧥 National Clothes", catHeadwear: "🧢 Headwear", catFood: "🧀 Long-life Foods",
+                noReviews: "No reviews yet. Be the first to leave one!",
+                addCartSuccess: "+ Add"
+            }
+        };
+
+        function getProductName(p) {
+            return p[`name_${lang}`] || p.name_kk || p.name || "";
+        }
+
+        function getProductDesc(p) {
+            return p[`desc_${lang}`] || p.desc_kk || p.desc || "";
+        }
+
+        function getReviewText(r) {
+            return r[`text_${lang}`] || r.text_kk || r.text || "";
+        }
+
+        function changeLanguage(val) {
+            lang = val;
+            const t = translations[lang] || translations['kk'];
+            
+            document.getElementById('lbl-home').innerText = t.home;
+            document.getElementById('lbl-search').innerText = t.search;
+            document.getElementById('lbl-chat').innerText = t.chat;
+            document.getElementById('lbl-cart').innerText = t.cart;
+            document.getElementById('lbl-fav').innerText = t.fav;
+
+            document.getElementById('hero-badge').innerText = t.heroBadge;
+            document.getElementById('hero-title').innerText = t.heroTitle;
+            document.getElementById('hero-desc').innerText = t.heroDesc;
+            document.getElementById('hero-sub').innerText = t.heroSub;
+            document.getElementById('cat-title').innerText = t.catTitle;
+            document.getElementById('prod-title').innerText = t.prodTitle;
+
+            document.getElementById('cart-header').innerText = t.cartHeader;
+            document.getElementById('total-text').innerText = t.totalText;
+            document.getElementById('btn-pay').innerText = t.btnPay;
+
+            document.getElementById('auth-title').innerText = t.authTitle;
+            document.getElementById('auth-desc').innerText = t.authDesc;
+            document.getElementById('search-header-title').innerText = t.searchHeaderTitle;
+            document.getElementById('search-input').placeholder = t.searchPlaceholder;
+            document.getElementById('lbl-stat-orders').innerText = t.statOrders;
+            document.getElementById('lbl-stat-bonus').innerText = t.statBonus;
+            document.getElementById('lbl-order-history').innerText = t.orderHistory;
+            document.getElementById('lbl-logout').innerText = t.logout;
+
+            document.getElementById('lbl-top-setting').innerText = t.topSetting;
+            document.getElementById('lbl-change-photo').innerText = t.changePhoto;
+            document.getElementById('lbl-main-section').innerText = t.mainSection;
+            document.getElementById('lbl-notifications').innerText = t.notifications;
+            document.getElementById('lbl-payment').innerText = t.payment;
+            document.getElementById('lbl-app-lang').innerText = t.appLang;
+            document.getElementById('lbl-app-curr').innerText = t.appCurr;
+            document.getElementById('lbl-security-section').innerText = t.securitySection;
+            document.getElementById('lbl-edit-profile').innerText = t.editProfile;
+            document.getElementById('lbl-change-code').innerText = t.changeCode;
+            document.getElementById('lbl-change-phone').innerText = t.changePhone;
+            document.getElementById('fav-header-title').innerText = t.favHeaderTitle;
+
+            document.getElementById('lbl-add-prod-btn').innerText = t.addProdBtn;
+            document.getElementById('lbl-header-profile').innerText = t.headerProfile;
+            document.getElementById('chat-desc').innerText = t.chatDesc;
+            document.getElementById('btn-send-post').innerText = t.btnSendPost;
+            document.getElementById('lbl-reg-name').innerText = t.regName;
+            document.getElementById('lbl-reg-surname').innerText = t.regSurname;
+            document.getElementById('lbl-reg-nickname').innerText = t.regNickname;
+            document.getElementById('lbl-reg-phone').innerText = t.regPhone;
+            document.getElementById('lbl-reg-email').innerText = t.regEmail;
+            document.getElementById('lbl-reg-pin').innerText = t.regPin;
+            document.getElementById('btn-submit-reg').innerText = t.btnSubmitReg;
+            document.getElementById('lbl-photo-modal-title').innerText = t.photoModalTitle;
+            document.getElementById('lbl-photo-change-btn').innerText = t.photoChangeBtn;
+            document.getElementById('lbl-photo-remove-btn').innerText = t.photoRemoveBtn;
+            document.getElementById('lbl-photo-cancel-btn').innerText = t.photoCancelBtn;
+            document.getElementById('lbl-edit-modal-title').innerText = t.editModalTitle;
+            document.getElementById('lbl-edit-save-btn').innerText = t.editSaveBtn;
+            document.getElementById('lbl-otp-title').innerText = t.otpTitle;
+            document.getElementById('lbl-otp-cancel').innerText = t.otpCancel;
+            document.getElementById('lbl-otp-verify').innerText = t.otpVerify;
+            document.getElementById('lbl-pay-title').innerText = t.payTitle;
+            document.getElementById('lbl-pay-name').innerText = t.payName;
+            document.getElementById('lbl-pay-num').innerText = t.payNum;
+            document.getElementById('lbl-pay-exp').innerText = t.payExp;
+            document.getElementById('lbl-pay-save-btn').innerText = t.paySaveBtn;
+            document.getElementById('lbl-add-prod-modal-title').innerText = t.addProdModalTitle;
+            document.getElementById('lbl-new-pname').innerText = t.newPname;
+            document.getElementById('lbl-new-pcat').innerText = t.newPcat;
+            document.getElementById('lbl-new-pprice').innerText = t.newPprice;
+            document.getElementById('lbl-new-pimg').innerText = t.newPimg;
+            document.getElementById('lbl-new-pdesc').innerText = t.newPdesc;
+            document.getElementById('lbl-new-psubmit').innerText = t.newPsubmit;
+            document.getElementById('lbl-detail-info-title').innerText = t.detailInfoTitle;
+            document.getElementById('lbl-detail-rev-title').innerText = t.detailRevTitle;
+            document.getElementById('lbl-detail-add-rev-btn').innerHTML = `<i class="fa-solid fa-plus mr-1"></i> ${t.detailAddRevBtn}`;
+            document.getElementById('detail-buy-now-btn').innerText = t.detailBuyNow;
+            document.getElementById('detail-add-cart-btn').innerText = t.detailAddCart;
+            document.getElementById('lbl-rev-modal-title').innerText = t.revModalTitle;
+            document.getElementById('lbl-rev-rate-label').innerText = t.revRateLabel;
+            document.getElementById('lbl-rev-text-label').innerText = t.revTextLabel;
+            document.getElementById('lbl-rev-img-label').innerText = t.revImgLabel;
+            document.getElementById('lbl-rev-submit-btn').innerText = t.revSubmitBtn;
+
+            document.getElementById('cat-btn-craft').innerText = t.catCraft;
+            document.getElementById('cat-btn-clothes').innerText = t.catClothes;
+            document.getElementById('cat-btn-headwear').innerText = t.catHeadwear;
+            document.getElementById('cat-btn-food').innerText = t.catFood;
+
+            renderCart();
+            renderProducts();
+            if (selectedProductForDetail) openProductDetail(selectedProductForDetail.id);
+        }
+
+        function changeCurrency(val) {
+            currency = val;
+            renderProducts();
+            if (favorites.length > 0) renderFavorites();
+            renderCart();
+            if (selectedProductForDetail) openProductDetail(selectedProductForDetail.id);
+        }
+
+        function openPhotoModal() { document.getElementById('photo-modal').classList.remove('hidden'); }
+        function closePhotoModal() { document.getElementById('photo-modal').classList.add('hidden'); }
+
+        function openEditProfileModal() {
+            if (!currentUser) return;
+            document.getElementById('edit-firstname').value = currentUser.name || '';
+            document.getElementById('edit-lastname').value = currentUser.surname || '';
+            document.getElementById('edit-nickname').value = currentUser.nickname || '';
+            document.getElementById('edit-gender').value = currentUser.gender || 'Korsetilmegen';
+            document.getElementById('edit-profile-modal').classList.remove('hidden');
+        }
+        function closeEditProfileModal() { document.getElementById('edit-profile-modal').classList.add('hidden'); }
+
+        function saveProfileChanges() {
+            if (!currentUser) return;
+            currentUser.name = document.getElementById('edit-firstname').value.trim();
+            currentUser.surname = document.getElementById('edit-lastname').value.trim();
+            currentUser.nickname = document.getElementById('edit-nickname').value.trim();
+            currentUser.gender = document.getElementById('edit-gender').value;
+
+            localStorage.setItem('otanic_user', JSON.stringify(currentUser));
+            closeEditProfileModal();
+            renderProfile();
+        }
+
+        function startPhoneChangeProcess() {
+            const newPhone = prompt("Жаңа телефон нөмірін енгізіңіз:");
+            if (newPhone && currentUser) {
+                pendingNewPhoneNumber = newPhone;
+                document.getElementById('otp-phone-message').innerText = `${newPhone} нөміріне 4 санды код жіберілді`;
+                document.getElementById('otp-input').value = '';
+                document.getElementById('otp-modal').classList.remove('hidden');
+            }
+        }
+        function closeOtpModal() { document.getElementById('otp-modal').classList.add('hidden'); }
+
+        function verifyOtpCode() {
+            const code = document.getElementById('otp-input').value.trim();
+            if (code.length === 4) {
+                currentUser.phone = pendingNewPhoneNumber;
+                localStorage.setItem('otanic_user', JSON.stringify(currentUser));
+                closeOtpModal();
+                renderProfile();
+            } else {
+                alert("Қате! 4 санды кодты енгізіңіз.");
+            }
+        }
+
+        function openPaymentModal() { document.getElementById('payment-modal').classList.remove('hidden'); }
+        function closePaymentModal() { document.getElementById('payment-modal').classList.add('hidden'); }
+
+        function savePaymentCard() {
+            const holder = document.getElementById('visa-holder-name').value.trim();
+            const cardNum = document.getElementById('visa-card-number').value.trim().replace(/\s+/g, '');
+
+            if (!cardNum || cardNum.length < 4) {
+                alert("Карта нөмірін дұрыс енгізіңіз!");
+                return;
+            }
+
+            const firstFour = cardNum.substring(0, 4);
+            currentUser.visaCard = {
+                holderName: holder || (currentUser.name + " " + currentUser.surname),
+                maskedNumber: `${firstFour} **** **** ****`
+            };
+            localStorage.setItem('otanic_user', JSON.stringify(currentUser));
+            closePaymentModal();
+            renderProfile();
+        }
+
+        function openAddProductModal() {
+            if (!currentUser) {
+                switchTab('profile');
+                return;
+            }
+            document.getElementById('add-product-modal').classList.remove('hidden');
+        }
+        function closeAddProductModal() { document.getElementById('add-product-modal').classList.add('hidden'); }
+
+        function handleAddNewProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-prod-name').value.trim();
+            const cat = document.getElementById('new-prod-cat').value;
+            const price = parseFloat(document.getElementById('new-prod-price').value);
+            const img = document.getElementById('new-prod-img').value.trim();
+            const desc = document.getElementById('new-prod-desc').value.trim();
+
+            const newProd = {
+                id: Date.now(),
+                category: cat,
+                priceUSD: price,
+                img: img || "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=400&q=80",
+                name_kk: name,
+                name_ru: name,
+                name_en: name,
+                desc_kk: desc,
+                desc_ru: desc,
+                desc_en: desc
+            };
+
+            products.unshift(newProd);
+            closeAddProductModal();
+            filterCategory(cat);
+        }
+
+        function openProductDetail(id) {
+            const p = products.find(x => x.id === id);
+            if (!p) return;
+            selectedProductForDetail = p;
+            const t = translations[lang] || translations['kk'];
+
+            document.getElementById('detail-prod-img').src = p.img;
+            document.getElementById('detail-prod-name').innerText = getProductName(p);
+            
+            const price = Math.round(p.priceUSD * rates[currency]);
+            document.getElementById('detail-prod-price').innerText = `${symbols[currency]}${price}`;
+            document.getElementById('detail-prod-desc').innerText = getProductDesc(p) || "Ақпарат енгізілмеген.";
+
+            const isFav = favorites.includes(p.id);
+            const heartEl = document.getElementById('detail-fav-heart');
+            heartEl.className = isFav ? "fa-solid fa-heart text-xl text-red-600" : "fa-regular fa-heart text-xl text-gray-400";
+            document.getElementById('detail-fav-btn').onclick = function() {
+                toggleFavorite(p.id);
+                openProductDetail(p.id);
+            };
+
+            const pReviews = reviewsMap[p.id] || [];
+            document.getElementById('detail-reviews-count').innerText = pReviews.length;
+            const revList = document.getElementById('detail-reviews-list');
+            
+            if (pReviews.length === 0) {
+                revList.innerHTML = `<p class="text-xs text-gray-400 py-2 text-center">${t.noReviews}</p>`;
+            } else {
+                revList.innerHTML = pReviews.map(r => `
+                    <div class="bg-gray-50 p-2.5 rounded-xl border text-xs">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-gray-800">${r.user}</span>
+                            <span class="text-amber-400 font-bold">${'★'.repeat(r.rating)}</span>
+                        </div>
+                        <p class="text-gray-600">${getReviewText(r)}</p>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('detail-add-cart-btn').onclick = function() {
+                addToCart(p.id);
+            };
+            document.getElementById('detail-buy-now-btn').onclick = function() {
+                if (!currentUser) {
+                    closeProductDetailModal();
+                    switchTab('profile');
+                    return;
+                }
+                addToCart(p.id);
+                closeProductDetailModal();
+                switchTab('cart');
+            };
+
+            document.getElementById('product-detail-modal').classList.remove('hidden');
+        }
+
+        function closeProductDetailModal() {
+            document.getElementById('product-detail-modal').classList.add('hidden');
+            selectedProductForDetail = null;
+        }
+
+        function openAddReviewModal() {
+            if (!currentUser) {
+                switchTab('profile');
+                return;
+            }
+            setReviewRating(5);
+            document.getElementById('review-text').value = '';
+            document.getElementById('review-img').value = '';
+            document.getElementById('add-review-modal').classList.remove('hidden');
+        }
+
+        function closeAddReviewModal() { document.getElementById('add-review-modal').classList.add('hidden'); }
+
+        function setReviewRating(rating) {
+            currentReviewRating = rating;
+            const stars = document.querySelectorAll('#review-stars i');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.className = "fa-solid fa-star";
+                } else {
+                    star.className = "fa-regular fa-star text-gray-300";
+                }
+            });
+        }
+
+        function submitReview() {
+            if (!selectedProductForDetail) return;
+            const text = document.getElementById('review-text').value.trim();
+            if (!text) return;
+
+            if (!reviewsMap[selectedProductForDetail.id]) reviewsMap[selectedProductForDetail.id] = [];
+            reviewsMap[selectedProductForDetail.id].unshift({
+                user: currentUser ? (currentUser.nickname || currentUser.name) : "Қолданушы",
+                rating: currentReviewRating,
+                text_kk: text,
+                text_ru: text,
+                text_en: text,
+                photo: document.getElementById('review-img').value.trim() || null
+            });
+
+            closeAddReviewModal();
+            openProductDetail(selectedProductForDetail.id);
+        }
+
+        function uploadAvatar(event) {
+            const file = event.target.files[0];
+            if (file && currentUser) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentUser.avatar = e.target.result;
+                    localStorage.setItem('otanic_user', JSON.stringify(currentUser));
+                    renderProfile();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeAvatar() {
+            if (currentUser) {
+                currentUser.avatar = null;
+                localStorage.setItem('otanic_user', JSON.stringify(currentUser));
+                renderProfile();
+            }
+        }
+
+        function openPinModal() {
+            const newPin = prompt("Жаңа 4 санды PIN-кодты енгізіңіз:");
+            if (newPin && newPin.length === 4 && currentUser) {
+                currentUser.pin = newPin;
+                localStorage.setItem('otanic_user', JSON.stringify(currentUser));
+            }
+        }
+
+        function filterCategory(cat) {
+            activeCategory = cat;
+            const buttons = document.querySelectorAll('#category-buttons button');
+            buttons.forEach(btn => {
+                btn.className = "cat-btn bg-white text-gray-700 border border-gray-200 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap shadow-sm";
+            });
+            const selectedBtn = document.getElementById(`cat-btn-${cat}`);
+            if (selectedBtn) {
+                selectedBtn.className = "cat-btn bg-amber-800 text-white px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap shadow";
+            }
+            renderProducts();
+        }
+
+        function toggleFavorite(id) {
+            const index = favorites.indexOf(id);
+            if (index > -1) favorites.splice(index, 1);
+            else favorites.push(id);
+            renderProducts();
+            if (document.getElementById('tab-favorites').classList.contains('hidden') === false) renderFavorites();
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const surname = document.getElementById('reg-surname').value.trim();
+            const nickname = document.getElementById('reg-nickname').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const pin = document.getElementById('reg-pin').value.trim();
+            
+            if (name && nickname && phone && email && pin.length === 4) {
+                currentUser = { 
+                    name, 
+                    surname, 
+                    nickname, 
+                    phone, 
+                    email, 
+                    pin, 
+                    gender: "Korsetilmegen", 
+                    avatar: null, 
+                    visaCard: null, 
+                    orders: [], 
+                    bonuses: 0 
+                };
+                localStorage.setItem('otanic_user', JSON.stringify(currentUser));
+                renderProfile();
+                renderFeed();
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('otanic_user');
+            renderProfile();
+            renderFeed();
+        }
+
+        function renderProfile() {
+            const authForm = document.getElementById('auth-form');
+            const userProfile = document.getElementById('user-profile');
+            const headerUserBadge = document.getElementById('header-user-badge');
+            const headerLogo = document.getElementById('header-logo');
+
+            if (currentUser) {
+                authForm.classList.add('hidden');
+                userProfile.classList.remove('hidden');
+                headerUserBadge.classList.remove('hidden');
+                headerLogo.classList.add('hidden');
+
+                document.getElementById('header-mini-nickname').innerText = currentUser.nickname || currentUser.name;
+                const firstLetter = (currentUser.nickname || currentUser.name).charAt(0).toUpperCase();
+                
+                const miniAvatar = document.getElementById('header-mini-avatar');
+                if (currentUser.avatar) {
+                    miniAvatar.innerHTML = `<img src="${currentUser.avatar}" class="w-full h-full object-cover">`;
+                } else {
+                    miniAvatar.innerText = firstLetter;
+                }
+
+                const avatarContainer = document.getElementById('profile-avatar-container');
+                if (currentUser.avatar) {
+                    avatarContainer.innerHTML = `<img src="${currentUser.avatar}" class="w-full h-full object-cover">`;
+                } else {
+                    avatarContainer.innerHTML = `<span class="text-2xl">${firstLetter}</span>`;
+                }
+
+                document.getElementById('profile-display-fullname').innerText = `${currentUser.name} ${currentUser.surname || ''}`;
+                document.getElementById('profile-display-nickname').innerText = `@${currentUser.nickname || currentUser.name}`;
+                document.getElementById('sec-display-phone').innerText = currentUser.phone;
+                
+                if (currentUser.visaCard) {
+                    document.getElementById('payment-display-text').innerHTML = `Visa ${currentUser.visaCard.maskedNumber.split(' ')[0]} **** <i class="fa-solid fa-chevron-right ml-1"></i>`;
+                } else {
+                    document.getElementById('payment-display-text').innerHTML = `Visa <i class="fa-solid fa-chevron-right ml-1"></i>`;
+                }
+
+                document.getElementById('profile-orders-count').innerText = currentUser.orders ? currentUser.orders.length : 0;
+                document.getElementById('profile-bonus-count').innerText = currentUser.bonuses || 0;
+                document.getElementById('profile-lang-select').value = lang;
+                document.getElementById('profile-currency-select').value = currency;
+
+                renderOrderHistory();
+            } else {
+                authForm.classList.remove('hidden');
+                userProfile.classList.add('hidden');
+                headerUserBadge.classList.add('hidden');
+                headerLogo.classList.remove('hidden');
+            }
+        }
+
+        function renderOrderHistory() {
+            const container = document.getElementById('profile-orders-list');
+            const t = translations[lang] || translations['kk'];
+            if (!currentUser || !currentUser.orders || currentUser.orders.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">${t.noOrders}</p>`;
+                return;
+            }
+            container.innerHTML = currentUser.orders.map(order => `
+                <div class="bg-gray-50 p-2 rounded-xl border flex items-center space-x-2 text-xs">
+                    <img src="${order.img}" class="w-10 h-10 object-cover rounded-lg">
+                    <div class="flex-1">
+                        <h4 class="font-bold text-gray-800 line-clamp-1">${order.name}</h4>
+                        <span class="text-gray-500 text-[10px]">Qty: ${order.qty}</span>
+                    </div>
+                    <span class="font-black text-amber-800">${symbols[currency]}${Math.round(order.priceUSD * order.qty * rates[currency])}</span>
+                </div>
+            `).join('');
+        }
+
+        function getProductCardHTML(p) {
+            const price = Math.round(p.priceUSD * rates[currency]);
+            const isFav = favorites.includes(p.id);
+            const heartClass = isFav ? "fa-solid text-red-600" : "fa-regular text-gray-400";
+            const t = translations[lang] || translations['kk'];
+
+            return `
+                <div onclick="openProductDetail(${p.id})" class="bg-white border rounded-xl overflow-hidden shadow-sm product-card flex flex-col justify-between relative cursor-pointer">
+                    <button onclick="event.stopPropagation(); toggleFavorite(${p.id});" class="absolute top-2 right-2 w-7 h-7 bg-white bg-opacity-80 rounded-full flex items-center justify-center shadow transition hover:scale-110 z-10">
+                        <i class="${heartClass} fa-heart text-sm"></i>
+                    </button>
+                    <div>
+                        <img src="${p.img}" class="w-full h-32 object-cover">
+                        <div class="p-2.5">
+                            <h3 class="font-bold text-xs text-gray-800 line-clamp-2 mb-1">${getProductName(p)}</h3>
+                        </div>
+                    </div>
+                    <div class="p-2.5 pt-0 flex items-center justify-between">
+                        <span class="font-black text-amber-800 text-xs">${symbols[currency]}${price}</span>
+                        <button onclick="event.stopPropagation(); addToCart(${p.id});" class="bg-amber-800 hover:bg-amber-900 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold shadow transition">${t.addCartSuccess}</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            const filtered = products.filter(p => p.category === activeCategory);
+            document.getElementById('product-count').innerText = `${filtered.length}`;
+            if (filtered.length === 0) {
+                grid.innerHTML = `<p class="col-span-full text-center text-gray-400 py-8 text-xs">Бұл санатта өнімдер жоқ</p>`;
+                return;
+            }
+            grid.innerHTML = filtered.map(p => getProductCardHTML(p)).join('');
+        }
+
+        function renderFavorites() {
+            const grid = document.getElementById('favorites-grid');
+            const favProducts = products.filter(p => favorites.includes(p.id));
+            if (favProducts.length === 0) {
+                grid.innerHTML = `<p class="col-span-full text-center text-gray-400 py-12 text-xs">Таңдаулылар тізімі бос</p>`;
+                return;
+            }
+            grid.innerHTML = favProducts.map(p => getProductCardHTML(p)).join('');
+        }
+
+        function handleSearch(query) {
+            const grid = document.getElementById('search-results-grid');
+            const q = query.toLowerCase().trim();
+            const found = q === "" ? products : products.filter(p => getProductName(p).toLowerCase().includes(q));
+            if (found.length === 0) {
+                grid.innerHTML = `<p class="col-span-full text-center text-gray-400 py-8 text-xs">Ештеңе табылмады</p>`;
+                return;
+            }
+            grid.innerHTML = found.map(p => getProductCardHTML(p)).join('');
+        }
+
+        function renderFeed() {
+            const list = document.getElementById('feed-list');
+            list.innerHTML = posts.map(post => `
+                <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm text-xs">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="font-bold text-gray-800">${post.user} <span class="font-normal text-gray-500 text-[10px]">${post.country}</span></span>
+                    </div>
+                    <p class="text-gray-700">${post.text}</p>
+                </div>
+            `).join('');
+        }
+
+        function addPost() {
+            const text = document.getElementById('post-text').value.trim();
+            const country = document.getElementById('user-country').value;
+            if (!text) return;
+            posts.unshift({ id: Date.now(), user: currentUser ? (currentUser.nickname || currentUser.name) : "Қолданушы", country, text, likes: 0 });
+            document.getElementById('post-text').value = '';
+            renderFeed();
+        }
+
+        function addToCart(id) {
+            const item = cart.find(x => x.id === id);
+            if (item) item.qty++;
+            else cart.push({ ...products.find(x => x.id === id), qty: 1 });
+            updateCartBadge();
+            renderCart();
+        }
+
+        function updateCartBadge() {
+            const badge = document.getElementById('cart-badge');
+            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            if (totalQty > 0) {
+                badge.innerText = totalQty;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('nav button').forEach(btn => btn.classList.replace('text-amber-800', 'text-gray-400'));
+            
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            document.getElementById(`nav-${tab}`).classList.replace('text-gray-400', 'text-amber-800');
+            
+            if (tab === 'cart') renderCart();
+            if (tab === 'chat') renderFeed();
+            if (tab === 'favorites') renderFavorites();
+            if (tab === 'profile') renderProfile();
+            if (tab === 'search') { document.getElementById('search-input').value = ''; handleSearch(''); }
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-content-area');
+            const checkoutBox = document.getElementById('cart-checkout-box');
+            const t = translations[lang] || translations['kk'];
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-6 space-y-3">
+                        <p class="text-gray-400 text-xs">Себетіңіз бос</p>
+                        <button onclick="switchTab('home')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-xl shadow-md transition text-xs inline-flex items-center space-x-2">
+                            <i class="fa-solid fa-store"></i>
+                            <span>${t.startShopping}</span>
+                        </button>
+                    </div>
+                `;
+                checkoutBox.classList.add('hidden');
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="space-y-2 mb-3">
+                    ${cart.map(item => {
+                        const price = Math.round(item.priceUSD * rates[currency]);
+                        return `
+                            <div class="flex items-center justify-between bg-white p-2.5 border rounded-xl text-xs">
+                                <img src="${item.img}" class="w-10 h-10 object-cover rounded-lg mr-2">
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-gray-800 line-clamp-1">${getProductName(item)}</h4>
+                                    <span class="font-semibold text-amber-800">${symbols[currency]}${price}</span>
+                                </div>
+                                <div class="flex items-center space-x-1.5">
+                                    <button onclick="changeQty(${item.id}, -1)" class="w-5 h-5 bg-gray-200 rounded font-bold flex items-center justify-center">-</button>
+                                    <span class="font-bold px-1">${item.qty}</span>
+                                    <button onclick="changeQty(${item.id}, 1)" class="w-5 h-5 bg-gray-200 rounded font-bold flex items-center justify-center">+</button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+            checkoutBox.classList.remove('hidden');
+            updateTotal();
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(x => x.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) cart = cart.filter(x => x.id !== id);
+            }
+            updateCartBadge();
+            renderCart();
+        }
+
+        function updateTotal() {
+            const subtotalUSD = cart.reduce((sum, item) => sum + item.priceUSD * item.qty, 0);
+            const convertedTotal = Math.round(subtotalUSD * rates[currency]);
+            document.getElementById('cart-total-price').innerText = `${symbols[currency]}${convertedTotal}`;
+        }
+
+        function checkout() {
+            if (cart.length === 0) return;
+            if (!currentUser) {
+                switchTab('profile');
+                return;
+            }
+            if (!currentUser.orders) currentUser.orders = [];
+            cart.forEach(cartItem => {
+                currentUser.orders.push({ name: getProductName(cartItem), img: cartItem.img, priceUSD: cartItem.priceUSD, qty: cartItem.qty });
+            });
+            currentUser.bonuses = (currentUser.bonuses || 0) + 50;
+            localStorage.setItem('otanic_user', JSON.stringify(currentUser));
+            cart = [];
+            updateCartBadge();
+            renderCart();
+            renderProfile();
+        }
+
+        // Initialize App
+        changeLanguage('kk');
+        renderProfile();
+    </script>
+</body>
+</html>
